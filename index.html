@@ -1,0 +1,789 @@
+<title>STYGT?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap">
+
+<style>
+:root {
+  --bg: #ECEAE6;
+  --surface: #E2DFD9;
+  --raised: #D5D2CB;
+  --text: #1C1A17;
+  --muted: #726E68;
+  --line: #C8C5BC;
+  --accent: #C04010;
+  --good: #2D6045;
+  --track: #D4D1CA;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #18160F;
+    --surface: #201E16;
+    --raised: #2A2820;
+    --text: #E5E2DA;
+    --muted: #9A9590;
+    --line: #38352C;
+    --accent: #D04A18;
+    --good: #3E8A60;
+    --track: #2A2820;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #18160F;
+  --surface: #201E16;
+  --raised: #2A2820;
+  --text: #E5E2DA;
+  --muted: #9A9590;
+  --line: #38352C;
+  --accent: #D04A18;
+  --good: #3E8A60;
+  --track: #2A2820;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.wrap {
+  max-width: 880px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+/* HEADER */
+.site-header {
+  padding-block: 52px 36px;
+  border-bottom: 1px solid var(--line);
+}
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(60px, 13vw, 112px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 0.88;
+  color: var(--text);
+}
+.logo em { color: var(--accent); font-style: normal; }
+.tagline {
+  margin-top: 14px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* SEARCH */
+.search-section { padding-block: 36px 32px; }
+.search-row { display: flex; gap: 10px; }
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 3px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--muted); }
+
+.search-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 3px;
+  padding: 0 22px;
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+.search-btn:hover { opacity: 0.82; }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+.chip {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 5px 11px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: color 0.15s, border-color 0.15s;
+}
+.chip:hover { color: var(--accent); border-color: var(--accent); }
+
+/* LOADING */
+#loading {
+  display: none;
+  padding-block: 52px;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* RESULTS */
+#results { display: none; padding-bottom: 80px; }
+
+.result-header {
+  padding-block: 36px 24px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+.result-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.result-stilord {
+  margin-top: 6px;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* PANELS */
+.panels { display: grid; gap: 16px; }
+
+.panel {
+  background: var(--surface);
+  border-radius: 3px;
+  padding: 22px 24px;
+}
+.panel-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.panel-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 580px) { .panel-row { grid-template-columns: 1fr; } }
+
+/* METER */
+.meter-wrap { display: flex; align-items: center; gap: 24px; }
+.meter-score {
+  font-family: 'Syne', sans-serif;
+  font-size: 60px;
+  font-weight: 800;
+  line-height: 1;
+  min-width: 90px;
+}
+.meter-right { flex: 1; min-width: 0; }
+.meter-verdict { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+.meter-track {
+  height: 7px;
+  background: var(--track);
+  border-radius: 3.5px;
+  overflow: hidden;
+}
+.meter-fill {
+  height: 100%;
+  border-radius: 3.5px;
+  width: 0;
+  transition: width 0.9s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.meter-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+/* TIDSEPOKER */
+.epoke-list { display: grid; gap: 14px; }
+.epoke { display: grid; grid-template-columns: 72px 1fr; gap: 12px; }
+.epoke-year {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--muted);
+  padding-top: 1px;
+}
+.epoke-body { border-left: 2px solid var(--line); padding-left: 14px; }
+.epoke-vibe { font-weight: 500; font-size: 14px; }
+.epoke-sitat { font-size: 12.5px; color: var(--muted); font-style: italic; margin-top: 2px; }
+
+/* SKYLDIG */
+.skyldig-list { display: grid; gap: 14px; }
+.skyldig-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.skyldig-actor { font-weight: 500; font-size: 14px; }
+.skyldig-pct {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.skyldig-explain { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+.skyldig-bar-track {
+  height: 3px;
+  background: var(--track);
+  border-radius: 2px;
+  margin-top: 7px;
+  overflow: hidden;
+}
+.skyldig-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  width: 0;
+  transition: width 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* FILOSOFI */
+.filosofi-text { font-size: 14.5px; line-height: 1.82; }
+
+/* UTFORDRINGER */
+.utfordring-list { list-style: none; display: grid; gap: 9px; }
+.utfordring { display: flex; gap: 11px; font-size: 13.5px; line-height: 1.5; }
+.utfordring::before { content: "—"; color: var(--accent); flex-shrink: 0; }
+
+/* KONTRAST */
+.kontrast-vs { font-size: 12px; font-style: italic; color: var(--muted); margin-bottom: 14px; }
+.kontrast-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 440px) { .kontrast-cols { grid-template-columns: 1fr; } }
+.kontrast-col h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.kontrast-col.bad h4 { color: var(--accent); }
+.kontrast-col.good h4 { color: var(--good); }
+.kontrast-text { font-size: 13px; line-height: 1.6; color: var(--muted); }
+
+/* SPØRSMÅL */
+.sporsmal-list { display: grid; gap: 8px; }
+.sporsmal {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 16px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+.sporsmal:hover { border-color: var(--accent); }
+.sporsmal-mark {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+  flex-shrink: 0;
+  line-height: 1.3;
+}
+.sporsmal-text { font-size: 14px; line-height: 1.5; }
+
+.btn-secondary {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 7px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  margin-top: 10px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.btn-secondary:hover { color: var(--accent); border-color: var(--accent); }
+
+.demo-note {
+  margin-top: 28px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--line);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+</style>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="logo">STYGT<em>?</em></div>
+    <p class="tagline">AI-sparringspartner for arkitektonisk research · Stygt 2 · NRK</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="search-section">
+      <div class="search-row">
+        <input type="text" class="search-input" id="searchInput"
+          placeholder="Søk på bygg, stil, sted eller begrep..."
+          onkeydown="if(event.key==='Enter') doSearch()">
+        <button class="search-btn" onclick="doSearch()" aria-label="Søk">→</button>
+      </div>
+      <div class="chips">
+        <button class="chip" onclick="setSearch('Kjøpesenter')">Kjøpesenter</button>
+        <button class="chip" onclick="setSearch('Drabantby og blokkbebyggelse')">Drabantby</button>
+        <button class="chip" onclick="setSearch('Glassfasader og kontorbygg')">Glassfasade</button>
+        <button class="chip" onclick="setSearch('Lom sentrum')">Lom ✓</button>
+        <button class="chip" onclick="setSearch('Brutalistisk arkitektur og rådhus')">Brutalisme</button>
+      </div>
+    </section>
+
+    <div id="loading">Analyserer arkitekturen…</div>
+
+    <section id="results">
+      <div class="result-header">
+        <div class="result-title" id="rTitle"></div>
+        <div class="result-stilord" id="rStilord"></div>
+      </div>
+
+      <div class="panels">
+
+        <!-- Stygt-o-meter -->
+        <div class="panel">
+          <div class="panel-label">Stygt-o-meter</div>
+          <div class="meter-wrap">
+            <div class="meter-score" id="mScore"></div>
+            <div class="meter-right">
+              <div class="meter-verdict" id="mVerdict"></div>
+              <div class="meter-track">
+                <div class="meter-fill" id="mFill"></div>
+              </div>
+              <div class="meter-scale"><span>Pent</span><span>Nøytralt</span><span>Stygt</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tidsepoker + Skyldig -->
+        <div class="panel-row">
+          <div class="panel">
+            <div class="panel-label">Slik har tidsepoker sett det</div>
+            <div class="epoke-list" id="epoker"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-label">Hvem er skyldig?</div>
+            <div class="skyldig-list" id="skyldig"></div>
+          </div>
+        </div>
+
+        <!-- Filosofi -->
+        <div class="panel">
+          <div class="panel-label">Filosofisk blikk</div>
+          <p class="filosofi-text" id="filosofi"></p>
+        </div>
+
+        <!-- Utfordringer + Kontrast -->
+        <div class="panel-row">
+          <div class="panel">
+            <div class="panel-label">Arkitektens utfordringer</div>
+            <ul class="utfordring-list" id="utfordringer"></ul>
+          </div>
+          <div class="panel">
+            <div class="panel-label">Stygt vs. pent</div>
+            <div class="kontrast-vs" id="kontrastVs"></div>
+            <div class="kontrast-cols">
+              <div class="kontrast-col bad">
+                <h4>Stygt</h4>
+                <div class="kontrast-text" id="kontrastStygt"></div>
+              </div>
+              <div class="kontrast-col good">
+                <h4>Pent</h4>
+                <div class="kontrast-text" id="kontrastPent"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hans Olav-spørsmål -->
+        <div class="panel">
+          <div class="panel-label">Hva ville Hans Olav Brenner spurt om?</div>
+          <div class="sporsmal-list" id="sporsmal"></div>
+          <button class="btn-secondary" onclick="refreshSporsmal()">Nytt forslag →</button>
+        </div>
+
+      </div>
+
+      <p class="demo-note">
+        Demo-modus: svarene er forhåndsskrevet for utvalgte søk. I produksjon vil dette bruke Claude API og svare på alle spørsmål i sanntid.
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<script>
+const T = {
+  kjøpesenter: {
+    title: "Kjøpesenter i norske tettsteder",
+    stilord: "Post-industriell detaljhandel",
+    meter: { score: 7.5, verdict: "Ganske stygt", color: "#C04010" },
+    tidsepoker: [
+      { år: "1960-t.", vibe: "Fremtidsoptimisme", sitat: "Endelig kan alle handle under ett tak! Dette er fremskrittet!" },
+      { år: "1980-t.", vibe: "Bilismens blomstring", sitat: "Parkering foran inngangen er ikke stygt – det er praktisk." },
+      { år: "2000-t.", vibe: "Global likegyldighet", sitat: "Bygget er likt i Drammen som i Dublin. Effektivitet!" },
+      { år: "2024", vibe: "Angeren setter inn", sitat: "Vi ødela gatelivet. Hvor ble det av handelsgatene med sjel?" }
+    ],
+    skyldig: [
+      { aktør: "Utbygger", pst: 42, farge: "#C04010", forklaring: "Presser på for billigste løsning og maksimal kvadratmeter" },
+      { aktør: "Kommune", pst: 28, farge: "#707070", forklaring: "Godkjenner uten estetiske krav – arbeidsplasser prioriteres" },
+      { aktør: "Arkitekt", pst: 18, farge: "#404040", forklaring: "Begrenset handlingsrom – budsjett og brief bestemmer" },
+      { aktør: "Staten", pst: 12, farge: "#A0A0A0", forklaring: "Manglende nasjonal arkitekturpolitikk og minimumskrav" }
+    ],
+    filosofi: "Kant ville spurt: finnes det noe sublimt i et kjøpesenter? Svaret er nei – det sublime forutsetter noe som overvelder oss. Et kjøpesenter overvelder ikke, det normaliserer. John Ruskin ville gråt: for ham var håndverk og naturmaterialer selve kilden til skjønnhet. En fasade i polykarbonat-panel er hans verste mareritt. Den moderne bærekraft-estetikken er mer nøktern: problemet er ikke bare at det er stygt, men at det er ufunksjonelt for menneskene som skal leve rundt det.",
+    utfordringer: [
+      "Budsjett: utbygger krever 40% lavere byggekostnad enn det som gir god arkitektur",
+      "Parkeringskrav: Plan- og bygningsloven krever X plasser per 100 m² – det spiser byrommet",
+      "Varetransport: logistikk og levering løses gjerne på bekostning av fasaden",
+      "Leietakerkrav: store kjeder krever bestemte inngangspartier og vindusstørrelser",
+      "Tidspress: prosjektet selges til politikere på 18 måneder – kvalitet tar tid"
+    ],
+    kontrast: {
+      vs: "Sammenligning: Bogstadveien, Oslo",
+      stygt: "Beige metallpanel, parkering foran inngangen, ingen vinduer mot gaten, ingen relasjon til omgivelsene.",
+      pent: "Kontinuerlig husrekke i varierende høyde, butikker i gateplan, menneskelig skala – et sted folk faktisk ønsker å gå."
+    },
+    sporsmal: [
+      "Hvem eier tomta kjøpesenteret ble bygget på – og hva sto der før?",
+      "Finnes det et kjøpesenter i Norge som faktisk er vakkert? Hvem bygde det og hvorfor?",
+      "Hva skjer med disse byggene om 20 år når enda mer handles på nett?",
+      "Hva sa nabobeboerne da kommunen godkjente byggetillatelsen?",
+      "Er det noen kommunepolitiker som i ettertid angrer på vedtaket?"
+    ]
+  },
+  blokkbebyggelse: {
+    title: "Blokkbebyggelse og drabantbyer",
+    stilord: "Sosialdemokratisk masseproduksjonsmodernisme",
+    meter: { score: 5.5, verdict: "Omdiskutert – avhenger av hvem du spør", color: "#B08030" },
+    tidsepoker: [
+      { år: "1950-t.", vibe: "Sosial visjon", sitat: "Alle nordmenn fortjener gode, moderne boliger. Ned med slummen!" },
+      { år: "1970-t.", vibe: "Massebygging", sitat: "Vi trenger 60 000 nye boliger. Arkitektur er sekundært. Tempo!" },
+      { år: "1990-t.", vibe: "Desillusjon", sitat: "Segregering og forfall. Drømmen ble et mareritt?" },
+      { år: "2024", vibe: "Revisjonisme", sitat: "Kanskje ikke alt var galt? Havbyen-kvalitetene er faktisk gode." }
+    ],
+    skyldig: [
+      { aktør: "Staten", pst: 45, farge: "#C04010", forklaring: "OBOS og Husbanken finansierte storstilt, standardisert bygging" },
+      { aktør: "Arkitekt", pst: 25, farge: "#707070", forklaring: "Le Corbusiers ideal om lys og luft tolket for bokstavelig" },
+      { aktør: "Kommune", pst: 20, farge: "#404040", forklaring: "Soneplaner som separerte funksjoner skapte ensformige områder" },
+      { aktør: "Utbygger", pst: 10, farge: "#A0A0A0", forklaring: "OBOS hadde faktisk ambisjoner – men ble presset hardt på pris" }
+    ],
+    filosofi: "Blokken er modernismens mest kontroversielle arv. Le Corbusier drømte om 'en maskin for å bo i' – og fikk delvis rett: funksjonell, men kald. Hannah Arendt ville sagt at drabantbyen ødelegger det offentlige rom – stedet der vi møtes og blir medborgere. Og likevel: de sosiale boligene ga en hel generasjon nordmenn sitt første ordentlige hjem med bad og sentralfyr. Stygt eller pent? Det avhenger fullstendig av hvem du spør – og hvem du er.",
+    utfordringer: [
+      "Prefabrikasjon: elementer støpes på fabrikk – arkitektonisk variasjon forsvinner",
+      "Heis: bygget uten heis, nå må universell utforming etterinstalleres kostbart",
+      "Brannsikkerhet: eldre blokker tilfredsstiller ikke dagens krav",
+      "Energi: uisolerte betongkonstruksjoner – oppgradering er krevende og dyrt",
+      "Sosial blanding: opprinnelig plan om miks av familier fungerte ikke som tenkt"
+    ],
+    kontrast: {
+      vs: "Sammenligning: Frederiksberg, København",
+      stygt: "Isolert blokkrekke uten kontakt med terrenget, innganger mot parkeringsplass, uniform betongfasade.",
+      pent: "Perimeter-kvartaler med indre gårdsplass, varierte høyder, aktiv gateplan, trær plantet som del av prosjektet."
+    },
+    sporsmal: [
+      "Finnes det noen som faktisk elsker blokka si og er stolte av å bo der?",
+      "Hva koster det å gjøre en hel drabantby vakker – og hvem skal betale?",
+      "Burde vi rive dem eller bevare dem som kulturarv fra velferdsstaten?",
+      "Hva tenker unge arkitekter i dag om besteforeldrenes store prosjekt?",
+      "Hvem bodde i de forfalne husene som ble revet for å gi plass til blokkene?"
+    ]
+  },
+  glass: {
+    title: "Glassfasader og kontorbygg",
+    stilord: "Corporate international modernisme",
+    meter: { score: 6.5, verdict: "Kaldt og identitetsløst", color: "#B08030" },
+    tidsepoker: [
+      { år: "1980-t.", vibe: "Kapitalismens triumf", sitat: "Glass er transparens. Glass er suksess. Glass er fremtiden." },
+      { år: "2000-t.", vibe: "Globalisering", sitat: "Bygget er likt i Frankfurt, Seoul og Oslo. Effektivitet." },
+      { år: "2015", vibe: "Grønnvasking", sitat: "Vi setter BREEAM-sertifikat på det. Da er det bærekraftig?" },
+      { år: "2024", vibe: "Oppgjørets time", sitat: "Overoppheting, blending, fuglekollisjoner. Klimakatastrofe av glass." }
+    ],
+    skyldig: [
+      { aktør: "Oppdragsgiver", pst: 48, farge: "#C04010", forklaring: "Vil signalisere modernitet og suksess – glass gjør det billig og enkelt" },
+      { aktør: "Arkitekt", pst: 22, farge: "#707070", forklaring: "Internasjonale idealer kopieres uten stedstilpasning" },
+      { aktør: "Kommune", pst: 18, farge: "#404040", forklaring: "Regulerer ikke fasadematerialer – bare høyde og utnyttelse" },
+      { aktør: "Industrien", pst: 12, farge: "#A0A0A0", forklaring: "Glassbransjen markedsfører aggressivt direkte mot byggherrer" }
+    ],
+    filosofi: "Det transparente kontoret lover åpenhet, men leverer kontroll. Foucault ville sett det som et panoptikon – alle kan se alle, ingen er fri. Ruskin ville sagt at glass mangler 'the lamp of truth' – det forfalsker materialitet og holder ikke løftene det gir. Men det finnes et motargument: Peter Zumthor viser at glass kan brukes poetisk i riktig sammenheng. Problemet er aldri glasset selv – det er serieproduksjonen av det samme bygget, overalt, uten hensyn til sted.",
+    utfordringer: [
+      "Termisk komfort: full glassfasade gir overoppheting om sommeren og varmetap om vinteren",
+      "Energibruk: kostbar solskjerming og kjøling spiser opp alle energigevinster",
+      "Fuglekollisjoner: glassfasader er blant de største dødsfellene for fugl i byer",
+      "Vedlikehold: spesialisert rengjøringsutstyr og dyr reparasjon ved skade",
+      "Akustikk: glassflater reflekterer lyd – åpne kontorlandskap med glass er støyende"
+    ],
+    kontrast: {
+      vs: "Sammenligning: Aker Brygge-kvartalene, Oslo",
+      stygt: "Ensartet glassboks uten tekstur, reflekterer himmelen men gir intet til gaten, ingen stedstilpasning.",
+      pent: "Tegl og glass i dialog, aktiv sokkelsone med butikker, taktile overflater som varierer med lyset."
+    },
+    sporsmal: [
+      "Finnes det et norsk kontorbygg i glass som faktisk er vakkert – og hva gjør det annerledes?",
+      "Hva skjer med disse byggene om 30 år? Er de fremtidens søppel?",
+      "Hvorfor godtar vi i Oslo det vi aldri ville tillatt i Bryggen i Bergen?",
+      "Har arkitekten noen gang stått i sitt eget glassbygg en varm sommerdag og tenkt: dette fungerer ikke?",
+      "Hvem fikk jobben med å designe fasaden – og hva sa de egentlig til oppdragsgiveren?"
+    ]
+  },
+  lom: {
+    title: "Lom – et forbilde for norsk byutvikling",
+    stilord: "Critical regionalism · Vernakular modernisme",
+    meter: { score: 2.5, verdict: "Faktisk ganske pent", color: "#2D6045" },
+    tidsepoker: [
+      { år: "1970-t.", vibe: "Truet kulturarv", sitat: "Her planla vi å rive og bygge nytt. Heldigvis ble det ikke slik." },
+      { år: "1985", vibe: "Politisk mot", sitat: "Lom vedtar arkitektoniske krav. Radikalt, upopulært og riktig." },
+      { år: "2000-t.", vibe: "Nasjonal anerkjennelse", sitat: "Lom er blitt et forbilde. Arkitekter og journalister vallfarter hit." },
+      { år: "2024", vibe: "Levende bevis", sitat: "Det er mulig. Krav virker. Men det krever varig politisk mot." }
+    ],
+    skyldig: [
+      { aktør: "Kommune", pst: 60, farge: "#2D6045", forklaring: "Tok et bevisst valg om å stille krav – og holdt fast ved dem over tid" },
+      { aktør: "Arkitekt", pst: 25, farge: "#707070", forklaring: "Respekterte stedets karakter og fant det frigjørende, ikke begrensende" },
+      { aktør: "Utbygger", pst: 10, farge: "#404040", forklaring: "Ble overrasket: kravene tvang frem bedre løsninger enn planlagt" },
+      { aktør: "Staten", pst: 5, farge: "#A0A0A0", forklaring: "Kulturminnefondet ga finansiell støtte og ryggdekning" }
+    ],
+    filosofi: "Lom er beviset på at det estetiske og det etiske kan møtes uten å ofre det ene for det andre. Kenneth Frampton ville kalt dette 'critical regionalism': arkitektur som er moderne og funksjonell, men forankret i stedets materialer, lys og topografi. Det er ikke nostalgi – det er identitet. Spørsmålet programmet bør stille høyt: Hvorfor er Lom unntaket, og ikke regelen?",
+    utfordringer: [
+      "Kompetanse: kommunen trenger fagkunnskap til å bedømme hva som er god arkitekturkvalitet",
+      "Tidspress: strenge krav tar lengre tid – utålmodige politikere frykter forsinkelser",
+      "Motstand: klagene om 'kreativitetsdrap' og kostnad er reelle og støyende",
+      "Kopieringsproblemet: Lom fungerer fordi det er autentisk – andre kopierer form, ikke ånd",
+      "Skalering: fungerer i liten fjellkommune med sterk identitet. Hva med Stjørdal på 25 000?"
+    ],
+    kontrast: {
+      vs: "Sammenligning: Mysen sentrum",
+      stygt: "Ingen koordinerte krav, vekst uten retning, fasader fra syv tiår i visuelt kaos side om side.",
+      pent: "Sammenhengende materialitet, menneskelig skala, bygg som snakker med hverandre og terrenget."
+    },
+    sporsmal: [
+      "Hva vil politikerne i Mysen svare hvis vi viser dem Lom og spør: hvorfor klarte dere ikke dette?",
+      "Er Lom-modellen overførbar til større kommuner – eller er det et unikum?",
+      "Hvem var personen som tok det første modige valget om arkitekturkrav i Lom?",
+      "Koster det faktisk mer å bygge pent – eller er det en myte utbyggere bruker som unnskyldning?",
+      "Hva tenker de unge i Lom om at hjemstedet er blitt et nasjonalt forbilde?"
+    ]
+  },
+  brutalisme: {
+    title: "Brutalisme og monumentalarkitektur",
+    stilord: "Sosialdemokratisk monumental modernisme",
+    meter: { score: 6.0, verdict: "Mektig – og dypt omstridt", color: "#B08030" },
+    tidsepoker: [
+      { år: "1950-t.", vibe: "Idealistisk start", sitat: "Betong er ærlig. Det lyver ikke. Vis strukturen som den er!" },
+      { år: "1970-t.", vibe: "Brutalistisk høydepunkt", sitat: "Rådhus og universiteter som monumenter over folket og fremskrittet." },
+      { år: "1990-t.", vibe: "Folkelig hat", sitat: "Det er kaldt, mørkt og forfalllent. Riv det og bygg noe pent." },
+      { år: "2024", vibe: "Kulturarv-kult", sitat: "Plutselig er det ikonisk. Instagram elsker det. Bevar det!" }
+    ],
+    skyldig: [
+      { aktør: "Arkitekt", pst: 40, farge: "#C04010", forklaring: "Ideologisk overbevisning om at råbetong og ærlighet var moralsk riktig" },
+      { aktør: "Staten", pst: 30, farge: "#707070", forklaring: "Bestilte monumentale bygg som symbol på velferdsstaten" },
+      { aktør: "Kommune", pst: 20, farge: "#404040", forklaring: "Finansierte rådhus og kulturhus som statussymboler" },
+      { aktør: "Tidsånd", pst: 10, farge: "#A0A0A0", forklaring: "Le Corbusier var verdensberømt – alle ville bygge som ham" }
+    ],
+    filosofi: "Brutalismens paradoks: det er den mest ærefryktige og mest hatede av alle arkitekturstilene. Arkitektene mente de var ærlige – betong i sin rå form, ingen skjulte strukturer, ingen løgner. Men publikum opplevde det som kaldt og fiendtlig. Robert Venturi svarte med å feire det 'ugly and ordinary' fremfor det sublime og monumentale. I dag opplever brutalismen en renaissance – men er det estetikk, nostalgi eller ironi vi egentlig feirer?",
+    utfordringer: [
+      "Betongkreft: karbonasering ødelegger armeringsjernen og fasaden sprekker opp",
+      "Taklekkasje: flate tak fra 1970-tallet lekker – dyr og komplisert utbedring",
+      "Kulde og mørke: dype himlinger og smale vinduer gir lite dagslys innendørs",
+      "Renoveringsdilemma: originalt uttrykk lar seg ikke forene med moderne isolasjonskrav",
+      "Vernestatus: kan ikke rives, men for dyrt å vedlikeholde – ingen enkel løsning"
+    ],
+    kontrast: {
+      vs: "Sammenligning: SAS Royal Hotel, København",
+      stygt: "Rå betongvegg uten artikulasjon, dype skygger som skjuler inngangen, avvisende mot gaten.",
+      pent: "Betong som bærer glass og lys, menneskelig skala i sokkelen, brutal kraft men ikke fiendtlig."
+    },
+    sporsmal: [
+      "Er det ekte at folk elsker Y-blokka – eller er det bare hipster-estetikk i ettertid?",
+      "Hva ville arkitekten som tegnet rådhuset ditt tenkt om at det nå er verneverdig?",
+      "Er brutalisme et norsk fenomen, eller importerte vi det ukritisk fra utenlandske idealer?",
+      "Hvem bestemte at Universitetet i Oslo skulle se ut som en festning fra 1960-tallet?",
+      "Finnes det noen i lokalsamfunnet som faktisk sørget da de hørte at bygget skulle rives?"
+    ]
+  }
+};
+
+function generic(q) {
+  return {
+    title: q.charAt(0).toUpperCase() + q.slice(1),
+    stilord: "Arkitektonisk analyse",
+    meter: { score: 6.0, verdict: "Under vurdering", color: "#B08030" },
+    tidsepoker: [
+      { år: "1960-t.", vibe: "Modernismens optimisme", sitat: "Vi bygger en ny verden. Funksjon er form." },
+      { år: "1980-t.", vibe: "Markedet bestemmer", sitat: "Det billigste er det beste. Arkitektur er luksus." },
+      { år: "2000-t.", vibe: "Global likegyldighet", sitat: "Internasjonalt, generisk, effektivt. Lokal identitet er irrelevant." },
+      { år: "2024", vibe: "Kritisk refleksjon", sitat: "Hva bygger vi egentlig? For hvem? Og til hvilken kostnad?" }
+    ],
+    skyldig: [
+      { aktør: "Utbygger", pst: 40, farge: "#C04010", forklaring: "Kortsiktig lønnsomhet prioriteres over langsiktig kvalitet" },
+      { aktør: "Kommune", pst: 28, farge: "#707070", forklaring: "Fraværende estetiske krav i reguleringsplanene" },
+      { aktør: "Arkitekt", pst: 20, farge: "#404040", forklaring: "Begrenset handlingsrom innenfor budsjett og tidsrammer" },
+      { aktør: "Staten", pst: 12, farge: "#A0A0A0", forklaring: "Nasjonal arkitekturpolitikk mangler tydelige krav og konsekvenser" }
+    ],
+    filosofi: "Skjønnhet i arkitektur er aldri tilfeldig – det er resultatet av bevisste valg om materialer, proporsjoner og relasjon til omgivelsene. Problemet med norsk arkitektur i dag er ikke mangel på talent, men mangel på krav. Når ingen stiller krav, bygger vi alltid til minimumskvalitet. Ruskin sa det slik: 'There is no wealth but life.' Hva slags liv skaper vi med de byggene vi godkjenner?",
+    utfordringer: [
+      "Budsjett: de fleste byggeprosjekter er underpriset fra starten av",
+      "Tid: arkitektonisk kvalitet krever rom for refleksjon og revisjon",
+      "Kompetanse: mange kommuner mangler intern arkitekturekspertise",
+      "Politisk vilje: å stille estetiske krav er risikabelt på kort sikt",
+      "Tradisjon: norsk byggebransje har ikke kultur for estetisk ambisjon"
+    ],
+    kontrast: {
+      vs: "Sammenligning: Lom sentrum",
+      stygt: "Bygg uten relasjon til omgivelsene, billige materialer, ingen arkitektonisk ambisjon, intet å minnes.",
+      pent: "Bygg som respekterer stedet, materialer med holdbarhet og sjel, menneskelig skala og lokal identitet."
+    },
+    sporsmal: [
+      "Hvem er ansvarlig for at dette ser ut som det gjør – og visste de bedre?",
+      "Hva ville dette stedet sett ut som om kommunen hadde stilt klare arkitekturkrav?",
+      "Finnes det noen i Norge som faktisk gjør dette riktig, og hva kan vi lære av dem?",
+      "Har noen noen gang bedt arkitekten om unnskyldning i ettertid?"
+    ]
+  };
+}
+
+function match(q) {
+  q = q.toLowerCase();
+  if (/kjøpesenter|handelssenter|senter|mysen|stathelle/.test(q)) return T.kjøpesenter;
+  if (/blokk|drabant|obos|boligblokk|husbank|groruddal/.test(q)) return T.blokkbebyggelse;
+  if (/glass|fasade|kontorbygg|transparent/.test(q)) return T.glass;
+  if (/lom|verneverdig|suksess|reguler/.test(q)) return T.lom;
+  if (/brutal|råhus|rådhus|betong|monumental|le corbusier/.test(q)) return T.brutalisme;
+  return null;
+}
+
+let current = null;
+
+function setSearch(val) {
+  document.getElementById('searchInput').value = val;
+  doSearch();
+}
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  const loading = document.getElementById('loading');
+  const results = document.getElementById('results');
+  loading.style.display = 'block';
+  results.style.display = 'none';
+  setTimeout(() => {
+    current = match(q) || generic(q);
+    render(current);
+    loading.style.display = 'none';
+    results.style.display = 'block';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      animateMeter(current.meter.score);
+      animateSkyldig(current.skyldig);
+    }));
+    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 700);
+}
+
+function render(d) {
+  document.getElementById('rTitle').textContent = d.title;
+  document.getElementById('rStilord').textContent = d.stilord;
+
+  document.getElementById('mScore').textContent = d.meter.score.toFixed(1);
+  document.getElementById('mScore').style.color = d.meter.color;
+  document.getElementById('mVerdict').textContent = d.meter.verdict;
+  document.getElementById('mFill').style.background = d.meter.color;
+  document.getElementById('mFill').style.width = '0%';
+
+  document.getElementById('epoker').innerHTML = d.tidsepoker.map(e => `
+    <div class="epoke">
+      <div class="epoke-year">${e.år}</div>
+      <div class="epoke-body">
+        <div class="epoke-vibe">${e.vibe}</div>
+        <div class="epoke-sitat">«${e.sitat}»</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('skyldig').innerHTML = d.skyldig.map(s => `
+    <div class="skyldig-item">
+      <div class="skyldig-top">
+        <div class="skyldig-actor">${s.aktør}</div>
+        <div class="skyldig-pct" style="color:${s.farge}">${s.pst}%</div>
+      </div>
+      <div class="skyldig-explain">${s.forklaring}</div>
+      <div class="skyldig-bar-track">
+        <div class="skyldig-bar-fill" style="background:${s.farge};width:0%"></div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('filosofi').textContent = d.filosofi;
+
+  document.getElementById('utfordringer').innerHTML = d.utfordringer
+    .map(u => `<li class="utfordring">${u}</li>`).join('');
+
+  document.getElementById('kontrastVs').textContent = d.kontrast.vs;
+  document.getElementById('kontrastStygt').textContent = d.kontrast.stygt;
+  document.getElementById('kontrastPent').textContent = d.kontrast.pent;
+
+  renderSporsmal(d.sporsmal);
+}
+
+function renderSporsmal(list) {
+  const shown = [...list].sort(() => Math.random() - 0.5).slice(0, 3);
+  document.getElementById('sporsmal').innerHTML = shown.map(s => `
+    <button class="sporsmal" onclick="setSearch(this.querySelector('.sporsmal-text').textContent)">
+      <span class="sporsmal-mark">?</span>
+      <span class="sporsmal-text">${s}</span>
+    </button>`).join('');
+}
+
+function refreshSporsmal() {
+  if (current) renderSporsmal(current.sporsmal);
+}
+
+function animateMeter(score) {
+  document.getElementById('mFill').style.width = (score / 10 * 100) + '%';
+}
+
+function animateSkyldig(skyldig) {
+  document.querySelectorAll('.skyldig-bar-fill').forEach((el, i) => {
+    if (skyldig[i]) setTimeout(() => { el.style.width = skyldig[i].pst + '%'; }, i * 80);
+  });
+}
+
+window.addEventListener('load', () => {
+  document.getElementById('searchInput').value = 'Kjøpesenter';
+  doSearch();
+});
+</script>
