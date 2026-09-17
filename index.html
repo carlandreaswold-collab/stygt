@@ -78,6 +78,70 @@ body {
   color: var(--muted);
 }
 
+/* API BAR */
+.api-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding-block: 9px;
+}
+.api-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.api-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+.api-dot.on { background: var(--good); }
+.api-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.api-key-input {
+  flex: 1;
+  min-width: 180px;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 5px 10px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.api-key-input:focus { border-color: var(--accent); }
+.api-key-input::placeholder { color: var(--muted); font-family: 'DM Sans', sans-serif; }
+.api-save-btn {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 5px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.15s, border-color 0.15s;
+}
+.api-save-btn:hover { color: var(--accent); border-color: var(--accent); }
+.api-status-text {
+  font-size: 11px;
+  color: var(--muted);
+}
+
 /* SEARCH */
 .search-section { padding-block: 36px 32px; }
 .search-row { display: flex; gap: 10px; }
@@ -151,7 +215,13 @@ body {
   padding-block: 36px 24px;
   border-bottom: 1px solid var(--line);
   margin-bottom: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
 }
+.result-title-area { flex: 1; }
 .result-title {
   font-family: 'Syne', sans-serif;
   font-size: clamp(22px, 4vw, 32px);
@@ -166,6 +236,20 @@ body {
   text-transform: uppercase;
   color: var(--muted);
 }
+.ai-badge {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--good);
+  border: 1px solid var(--good);
+  border-radius: 2px;
+  padding: 4px 10px;
+  flex-shrink: 0;
+}
+.ai-badge.visible { display: flex; }
 
 /* PANELS */
 .panels { display: grid; gap: 16px; }
@@ -199,6 +283,7 @@ body {
   font-weight: 800;
   line-height: 1;
   min-width: 90px;
+  transition: color 0.4s;
 }
 .meter-right { flex: 1; min-width: 0; }
 .meter-verdict { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
@@ -212,7 +297,7 @@ body {
   height: 100%;
   border-radius: 3.5px;
   width: 0;
-  transition: width 0.9s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: width 0.9s cubic-bezier(0.25, 1, 0.5, 1), background 0.4s;
 }
 .meter-scale {
   display: flex;
@@ -350,6 +435,20 @@ body {
   </div>
 </header>
 
+<div class="api-bar">
+  <div class="wrap">
+    <div class="api-inner">
+      <div class="api-dot" id="apiDot"></div>
+      <span class="api-label">Claude API</span>
+      <input type="password" class="api-key-input" id="apiKeyInput"
+        placeholder="sk-ant-... (valgfritt – gir ekte AI-svar på alle søk)"
+        onkeydown="if(event.key==='Enter') saveApiKey()">
+      <button class="api-save-btn" onclick="saveApiKey()">Lagre</button>
+      <span class="api-status-text" id="apiStatusText">Demo-modus</span>
+    </div>
+  </div>
+</div>
+
 <main>
   <div class="wrap">
 
@@ -373,13 +472,15 @@ body {
 
     <section id="results">
       <div class="result-header">
-        <div class="result-title" id="rTitle"></div>
-        <div class="result-stilord" id="rStilord"></div>
+        <div class="result-title-area">
+          <div class="result-title" id="rTitle"></div>
+          <div class="result-stilord" id="rStilord"></div>
+        </div>
+        <div class="ai-badge" id="aiBadge">⬡ AI-generert</div>
       </div>
 
       <div class="panels">
 
-        <!-- Stygt-o-meter -->
         <div class="panel">
           <div class="panel-label">Stygt-o-meter</div>
           <div class="meter-wrap">
@@ -394,7 +495,6 @@ body {
           </div>
         </div>
 
-        <!-- Tidsepoker + Skyldig -->
         <div class="panel-row">
           <div class="panel">
             <div class="panel-label">Slik har tidsepoker sett det</div>
@@ -406,13 +506,11 @@ body {
           </div>
         </div>
 
-        <!-- Filosofi -->
         <div class="panel">
           <div class="panel-label">Filosofisk blikk</div>
           <p class="filosofi-text" id="filosofi"></p>
         </div>
 
-        <!-- Utfordringer + Kontrast -->
         <div class="panel-row">
           <div class="panel">
             <div class="panel-label">Arkitektens utfordringer</div>
@@ -434,7 +532,6 @@ body {
           </div>
         </div>
 
-        <!-- Hans Olav-spørsmål -->
         <div class="panel">
           <div class="panel-label">Hva ville Hans Olav Brenner spurt om?</div>
           <div class="sporsmal-list" id="sporsmal"></div>
@@ -443,8 +540,8 @@ body {
 
       </div>
 
-      <p class="demo-note">
-        Demo-modus: svarene er forhåndsskrevet for utvalgte søk. I produksjon vil dette bruke Claude API og svare på alle spørsmål i sanntid.
+      <p class="demo-note" id="demoNote">
+        Demo-modus: svarene er forhåndsskrevet for utvalgte søk. Legg til en Claude API-nøkkel øverst for å få ekte AI-svar på alle søk i sanntid.
       </p>
     </section>
 
@@ -452,11 +549,12 @@ body {
 </main>
 
 <script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
 const T = {
   kjøpesenter: {
     title: "Kjøpesenter i norske tettsteder",
     stilord: "Post-industriell detaljhandel",
-    meter: { score: 7.5, verdict: "Ganske stygt", color: "#C04010" },
+    meter: { score: 7.5, verdict: "Ganske stygt" },
     tidsepoker: [
       { år: "1960-t.", vibe: "Fremtidsoptimisme", sitat: "Endelig kan alle handle under ett tak! Dette er fremskrittet!" },
       { år: "1980-t.", vibe: "Bilismens blomstring", sitat: "Parkering foran inngangen er ikke stygt – det er praktisk." },
@@ -493,7 +591,7 @@ const T = {
   blokkbebyggelse: {
     title: "Blokkbebyggelse og drabantbyer",
     stilord: "Sosialdemokratisk masseproduksjonsmodernisme",
-    meter: { score: 5.5, verdict: "Omdiskutert – avhenger av hvem du spør", color: "#B08030" },
+    meter: { score: 5.5, verdict: "Omdiskutert – avhenger av hvem du spør" },
     tidsepoker: [
       { år: "1950-t.", vibe: "Sosial visjon", sitat: "Alle nordmenn fortjener gode, moderne boliger. Ned med slummen!" },
       { år: "1970-t.", vibe: "Massebygging", sitat: "Vi trenger 60 000 nye boliger. Arkitektur er sekundært. Tempo!" },
@@ -530,7 +628,7 @@ const T = {
   glass: {
     title: "Glassfasader og kontorbygg",
     stilord: "Corporate international modernisme",
-    meter: { score: 6.5, verdict: "Kaldt og identitetsløst", color: "#B08030" },
+    meter: { score: 6.5, verdict: "Kaldt og identitetsløst" },
     tidsepoker: [
       { år: "1980-t.", vibe: "Kapitalismens triumf", sitat: "Glass er transparens. Glass er suksess. Glass er fremtiden." },
       { år: "2000-t.", vibe: "Globalisering", sitat: "Bygget er likt i Frankfurt, Seoul og Oslo. Effektivitet." },
@@ -567,7 +665,7 @@ const T = {
   lom: {
     title: "Lom – et forbilde for norsk byutvikling",
     stilord: "Critical regionalism · Vernakular modernisme",
-    meter: { score: 2.5, verdict: "Faktisk ganske pent", color: "#2D6045" },
+    meter: { score: 2.5, verdict: "Faktisk ganske pent" },
     tidsepoker: [
       { år: "1970-t.", vibe: "Truet kulturarv", sitat: "Her planla vi å rive og bygge nytt. Heldigvis ble det ikke slik." },
       { år: "1985", vibe: "Politisk mot", sitat: "Lom vedtar arkitektoniske krav. Radikalt, upopulært og riktig." },
@@ -604,11 +702,11 @@ const T = {
   brutalisme: {
     title: "Brutalisme og monumentalarkitektur",
     stilord: "Sosialdemokratisk monumental modernisme",
-    meter: { score: 6.0, verdict: "Mektig – og dypt omstridt", color: "#B08030" },
+    meter: { score: 6.0, verdict: "Mektig – og dypt omstridt" },
     tidsepoker: [
       { år: "1950-t.", vibe: "Idealistisk start", sitat: "Betong er ærlig. Det lyver ikke. Vis strukturen som den er!" },
       { år: "1970-t.", vibe: "Brutalistisk høydepunkt", sitat: "Rådhus og universiteter som monumenter over folket og fremskrittet." },
-      { år: "1990-t.", vibe: "Folkelig hat", sitat: "Det er kaldt, mørkt og forfalllent. Riv det og bygg noe pent." },
+      { år: "1990-t.", vibe: "Folkelig hat", sitat: "Det er kaldt, mørkt og forfallent. Riv det og bygg noe pent." },
       { år: "2024", vibe: "Kulturarv-kult", sitat: "Plutselig er det ikonisk. Instagram elsker det. Bevar det!" }
     ],
     skyldig: [
@@ -644,7 +742,7 @@ function generic(q) {
   return {
     title: q.charAt(0).toUpperCase() + q.slice(1),
     stilord: "Arkitektonisk analyse",
-    meter: { score: 6.0, verdict: "Under vurdering", color: "#B08030" },
+    meter: { score: 6.0, verdict: "Under vurdering" },
     tidsepoker: [
       { år: "1960-t.", vibe: "Modernismens optimisme", sitat: "Vi bygger en ny verden. Funksjon er form." },
       { år: "1980-t.", vibe: "Markedet bestemmer", sitat: "Det billigste er det beste. Arkitektur er luksus." },
@@ -689,6 +787,114 @@ function match(q) {
   return null;
 }
 
+// ── SCORE COLOR ───────────────────────────────────────────────────────────────
+function scoreColor(score) {
+  if (score < 4) return '#2D6045';
+  if (score < 7) return '#B08030';
+  return '#C04010';
+}
+
+// ── API KEY ───────────────────────────────────────────────────────────────────
+function loadApiKey() {
+  try { return localStorage.getItem('stygt_api_key') || ''; } catch(e) { return ''; }
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  try {
+    if (key) localStorage.setItem('stygt_api_key', key);
+    else localStorage.removeItem('stygt_api_key');
+  } catch(e) {}
+  updateApiUi();
+}
+
+function updateApiUi() {
+  const key = loadApiKey();
+  const dot = document.getElementById('apiDot');
+  const status = document.getElementById('apiStatusText');
+  const input = document.getElementById('apiKeyInput');
+  const note = document.getElementById('demoNote');
+  if (key) {
+    dot.classList.add('on');
+    status.textContent = 'AI-aktiv — svar genereres av Claude i sanntid';
+    input.value = key.slice(0, 14) + '…';
+    note.textContent = 'AI-modus: score, filosofi og spørsmål genereres av Claude. Legg inn et ukjent søk for å se full AI-analyse.';
+  } else {
+    dot.classList.remove('on');
+    status.textContent = 'Demo-modus';
+    input.value = '';
+    note.textContent = 'Demo-modus: svarene er forhåndsskrevet for utvalgte søk. Legg til en Claude API-nøkkel øverst for å få ekte AI-svar på alle søk.';
+  }
+}
+
+// ── CLAUDE API CALL ───────────────────────────────────────────────────────────
+async function callClaude(apiKey, query, isKnown) {
+  const system = 'Du er arkitekturkritiker for NRK-programmet "Stygt?" med Hans Olav Brenner. Svar alltid med kun gyldig JSON, ingen annen tekst, ingen markdown-formatering.';
+
+  const shortPrompt = `Analyser dette arkitekturfeltet: "${query}"
+
+Svar med JSON:
+{
+  "score": <tall 1-10, 1=pent 10=stygt>,
+  "verdict": "<kort dom på norsk, maks 6 ord>",
+  "filosofi": "<2-3 setninger filosofisk analyse på norsk>",
+  "sporsmal": ["<spørsmål 1>", "<spørsmål 2>", "<spørsmål 3>", "<spørsmål 4>"]
+}`;
+
+  const fullPrompt = `Analyser dette arkitekturfeltet: "${query}"
+
+Svar med JSON:
+{
+  "title": "<tittel>",
+  "stilord": "<arkitektonisk stilbeskrivelse, 3-5 ord>",
+  "meter": {"score": <1-10>, "verdict": "<dom, maks 6 ord>"},
+  "tidsepoker": [
+    {"år": "1960-t.", "vibe": "<vibe>", "sitat": "<sitat fra tenkt arkitekt fra epoken>"},
+    {"år": "1980-t.", "vibe": "...", "sitat": "..."},
+    {"år": "2000-t.", "vibe": "...", "sitat": "..."},
+    {"år": "2024", "vibe": "...", "sitat": "..."}
+  ],
+  "skyldig": [
+    {"aktør": "<aktør>", "pst": <prosent>, "farge": "#C04010", "forklaring": "<forklaring>"},
+    {"aktør": "...", "pst": ..., "farge": "#707070", "forklaring": "..."},
+    {"aktør": "...", "pst": ..., "farge": "#404040", "forklaring": "..."},
+    {"aktør": "...", "pst": ..., "farge": "#A0A0A0", "forklaring": "..."}
+  ],
+  "filosofi": "<2-4 setninger filosofisk analyse>",
+  "utfordringer": ["<utfordring 1>", "<utfordring 2>", "<utfordring 3>", "<utfordring 4>", "<utfordring 5>"],
+  "kontrast": {
+    "vs": "Sammenligning: <referansebygg eller sted>",
+    "stygt": "<beskrivelse av det styggeste eksempelet>",
+    "pent": "<beskrivelse av det peneste eksempelet>"
+  },
+  "sporsmal": ["<spørsmål 1>", "<spørsmål 2>", "<spørsmål 3>", "<spørsmål 4>"]
+}
+Alle svar på norsk. pst-verdiene i skyldig skal summere til 100.`;
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: isKnown ? 1024 : 2048,
+      system,
+      messages: [{ role: 'user', content: isKnown ? shortPrompt : fullPrompt }]
+    })
+  });
+
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const data = await resp.json();
+  let text = data.content[0].text.trim();
+  text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+  return JSON.parse(text);
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
 let current = null;
 
 function setSearch(val) {
@@ -696,15 +902,46 @@ function setSearch(val) {
   doSearch();
 }
 
-function doSearch() {
+async function doSearch() {
   const q = document.getElementById('searchInput').value.trim();
   if (!q) return;
+
   const loading = document.getElementById('loading');
   const results = document.getElementById('results');
+  const badge = document.getElementById('aiBadge');
   loading.style.display = 'block';
   results.style.display = 'none';
-  setTimeout(() => {
-    current = match(q) || generic(q);
+  badge.classList.remove('visible');
+
+  const apiKey = loadApiKey();
+  const knownData = match(q);
+
+  try {
+    let data;
+
+    if (apiKey) {
+      const ai = await callClaude(apiKey, q, !!knownData);
+
+      if (knownData) {
+        data = {
+          ...knownData,
+          meter: { score: ai.score, verdict: ai.verdict },
+          filosofi: ai.filosofi,
+          sporsmal: ai.sporsmal
+        };
+      } else {
+        data = {
+          ...ai,
+          meter: ai.meter
+        };
+      }
+      badge.classList.add('visible');
+    } else {
+      await new Promise(r => setTimeout(r, 700));
+      data = knownData || generic(q);
+    }
+
+    current = data;
     render(current);
     loading.style.display = 'none';
     results.style.display = 'block';
@@ -713,17 +950,32 @@ function doSearch() {
       animateSkyldig(current.skyldig);
     }));
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 700);
+
+  } catch (err) {
+    console.warn('Claude API feil, faller tilbake til demo:', err);
+    await new Promise(r => setTimeout(r, 400));
+    current = knownData || generic(q);
+    render(current);
+    loading.style.display = 'none';
+    results.style.display = 'block';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      animateMeter(current.meter.score);
+      animateSkyldig(current.skyldig);
+    }));
+    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
+// ── RENDER ────────────────────────────────────────────────────────────────────
 function render(d) {
   document.getElementById('rTitle').textContent = d.title;
   document.getElementById('rStilord').textContent = d.stilord;
 
+  const col = scoreColor(d.meter.score);
   document.getElementById('mScore').textContent = d.meter.score.toFixed(1);
-  document.getElementById('mScore').style.color = d.meter.color;
+  document.getElementById('mScore').style.color = col;
   document.getElementById('mVerdict').textContent = d.meter.verdict;
-  document.getElementById('mFill').style.background = d.meter.color;
+  document.getElementById('mFill').style.background = col;
   document.getElementById('mFill').style.width = '0%';
 
   document.getElementById('epoker').innerHTML = d.tidsepoker.map(e => `
@@ -782,7 +1034,9 @@ function animateSkyldig(skyldig) {
   });
 }
 
+// ── INIT ──────────────────────────────────────────────────────────────────────
 window.addEventListener('load', () => {
+  updateApiUi();
   document.getElementById('searchInput').value = 'Kjøpesenter';
   doSearch();
 });
